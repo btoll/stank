@@ -1,0 +1,56 @@
+#!/usr/bin/env node
+/* eslint-disable no-console */
+'use strict';
+
+const logger = require('logger'),
+    argv = require('yargs')
+    .usage('Usage: stank [options]')
+
+    .alias('f', 'file')
+    .nargs('f', 1)
+    .describe('f', 'The file to analyze')
+
+    .describe('html', 'Creates an html document of the tree')
+    .boolean('html')
+
+    .alias('v', 'verbose')
+    .boolean('v')
+    .describe('v', 'Dumps `it` blocks')
+
+    .help('h')
+    .alias('h', 'help')
+    .argv,
+
+    // Default to logging to stdout.
+    generator = require(`../src/generator/${!argv.html ? 'log' : 'html'}`),
+    makeTree = require('../src/index'),
+    file = argv.file,
+    // TODO
+    log = console.log,
+    error = logger.error;
+
+if (!file) {
+    const stdin = process.stdin;
+    let buf = '';
+
+    stdin.setEncoding('utf8');
+
+    stdin.on('readable', () => {
+        const chunk = stdin.read();
+
+        if (chunk !== null) {
+            buf += chunk;
+        }
+    });
+
+    stdin.on('end', () => {
+        makeTree(buf, generator, true)
+        .then(log)
+        .catch(error);
+    });
+} else {
+    makeTree(file, generator, argv.verbose, false)
+    .then(log)
+    .catch(error);
+}
+
