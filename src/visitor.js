@@ -88,7 +88,7 @@ module.exports = {
                             this.visit(node, node, results);
                         }
                     });
-                } else if (node.callee.type === 'ArrowFunctionExpression') {
+                } else if (node.callee) {
                     this.visit(node.callee, node, results);
                 }
                 break;

@@ -41,6 +41,7 @@ function makeTree(file, generator, isData) {
 
 function visitTree(suite) {
     return visitor.visit(esprima.parse(suite, {
+        comment: true,
         loc: true
     }), null, []);
 }
