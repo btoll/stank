@@ -2,6 +2,9 @@
   "name": "stank",
   "version": "0.1.0",
   "description": "JavaScript static code analysis tool to detect code smells",
+  "bin": {
+    "stank": "./bin/stank"
+  },
   "main": "./src/index.js",
   "directories": {
     "test": "test"
