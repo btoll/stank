@@ -31,7 +31,9 @@
   "author": "Benjamin Toll <benjam72@yahoo.com> (http://www.benjamintoll.com)",
   "license": "MIT",
   "dependencies": {
-    "s": "git+https://github.com/btoll/s.git"
+    "logger": "git+https://github.com/btoll/logger.git",
+    "s": "git+https://github.com/btoll/s.git",
+    "yargs": "^4.6.0"
   },
   "devDependencies": {
     "babel-core": "^6.7.6",
