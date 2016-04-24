@@ -1,4 +1,4 @@
-/* eslint-disable no-case-declarations,one-var */
+/* eslint-disable one-var */
 'use strict';
 
 const captureBinary = (node, parent, results) => {
@@ -22,13 +22,13 @@ const captureFunction = function (node, parent, results) {
         });
     }
 
-    stackManager.push([0]);
+    stackManager.incr(0);
 
     bodies.forEach(n => this.visit(n, node, results));
 
-    const a = stackManager.pop();
+    const n = stackManager.incr(null);
 
-    if (a[0] > 1) {
+    if (n > 1) {
         results.push({
             node,
             type: 'TooManyReturns'
@@ -46,14 +46,21 @@ const stackManager = (() => {
     const stack = [];
 
     return {
-        incr: () => {
-            const ctx = stack.pop();
+        incr: i => {
+            // Increment.
+            if (i === undefined) {
+                let ctx = stack.pop();
 
-            ctx[0]++;
-            stack.push(ctx);
-        },
-        pop: () => stack.pop(),
-        push: v => stack.push(v)
+                ctx++;
+                stack.push(ctx);
+            } else if (i === null) {
+                // Remove.
+                return stack.pop();
+            } else {
+                 // Create.
+                stack.push(i);
+            }
+        }
     };
 })();
 
