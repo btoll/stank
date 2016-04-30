@@ -1,12 +1,23 @@
 /* eslint-disable one-var */
 'use strict';
 
-const captureBinary = (node, parent, results) => {
-    // TODO: Optimize.
-    if (['instanceof', 'typeof'].indexOf(node.operator) > -1) {
+const map = {
+    'instanceof': 'InstanceOf',
+    'typeof': 'TypeOf'
+};
+
+const captureBinaryOrUnary = function (node, parent, results) {
+    const operator = node.operator;
+
+    if (['instanceof', 'typeof'].indexOf(operator) > -1) {
         results.push({
-            node: parent,
-            type: node.operator
+            node: operator === 'typeof' ? parent : node,
+            type: `DontUse${map[operator]}`
+        });
+    } else if (node.left.operator === 'typeof') {
+        results.push({
+            node,
+            type: 'DontUseTypeOf'
         });
     }
 };
@@ -24,7 +35,7 @@ const captureFunction = function (node, parent, results) {
 
     stackManager.incr(0);
 
-    bodies.forEach(n => this.visit(n, node, results));
+    bodies.forEach(body => this.visit(body, node, results));
 
     const n = stackManager.incr(null);
 
@@ -65,6 +76,7 @@ const stackManager = (() => {
 })();
 
 module.exports = {
+    // TODO: DRY
     ArrowFunctionExpression(node, parent, results) {
         captureFunction.call(this, node, parent, results);
     },
@@ -75,8 +87,8 @@ module.exports = {
         captureFunction.call(this, node, parent, results);
     },
 
-    BinaryExpression: captureBinary,
-    UnaryExpression: captureBinary,
+    BinaryExpression: captureBinaryOrUnary,
+    UnaryExpression: captureBinaryOrUnary,
 
     ConditionalExpression(node, parent, results) {
         if (node.consequent.type === 'ConditionalExpression' ||
@@ -92,9 +104,23 @@ module.exports = {
     ForInStatement: captureLoop,
     ForOfStatement: captureLoop,
     DoWhileStatement: captureLoop,
-    Identifier: captureLoop,
-    NewExpression: captureLoop,
     WhileStatement: captureLoop,
+
+    Identifier(node, parent, results) {
+        if (node.name === 'arguments') {
+            results.push({
+                node: parent,
+                type: 'DontUseArguments'
+            });
+        }
+    },
+
+    NewExpression(node, parent, results) {
+        results.push({
+            node: parent,
+            type: 'DontUseNew'
+        });
+    },
 
     ReturnStatement(node, parent, results) {
         const returnArgs = node.argument.arguments;
@@ -103,6 +129,7 @@ module.exports = {
             returnArgs.forEach(node => this.visit(node, parent, results));
         }
 
+        this.visit(node.argument, node, results);
         stackManager.incr();
     }
 };
