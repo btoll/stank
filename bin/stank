@@ -10,12 +10,12 @@ const logger = require('logger'),
     .nargs('f', 1)
     .describe('f', 'The file to analyze')
 
-    .describe('html', 'Creates an html document of the tree')
+    .describe('html', 'Creates an html document of the analysis')
     .boolean('html')
 
-    .alias('v', 'verbose')
+    .alias('v', 'debug')
     .boolean('v')
-    .describe('v', 'Dumps `it` blocks')
+    .describe('v', 'Turns on verbose debug logging')
 
     .help('h')
     .alias('h', 'help')
@@ -29,6 +29,11 @@ const logger = require('logger'),
     // TODO
     log = console.log,
     error = logger.error;
+
+// Logging is enabled by default.
+if (!argv.v) {
+    logger.disable();
+}
 
 // Mixin.
 h.register(visitor);

@@ -8,6 +8,7 @@ Code smells that stank...
 - Function bodies that contain more than ten statements
 - Multiple `return` statements within the same function body
 - Nested ternary operators
+- `arguments` (TODO)
 - `instanceof`
 - `new`
 - `typeof`
