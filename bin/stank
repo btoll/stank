@@ -1,41 +1,59 @@
 #!/usr/bin/env node
-/* eslint-disable no-console */
 'use strict';
 
 const logger = require('logger'),
     argv = require('yargs')
     .usage('Usage: stank [options]')
 
-    .alias('f', 'file')
+    .describe('debug', 'Turns on debug logging')
+    .alias('debug', 'd')
+    .boolean('debug')
+
+    .describe('file', 'The file to analyze')
+    .alias('file', 'f')
     .nargs('f', 1)
-    .describe('f', 'The file to analyze')
+
+    //.describe('flags', 'A bitmask, specifies which types are captured')
+    //.nargs('f', 1)
 
     .describe('html', 'Creates an html document of the analysis')
     .boolean('html')
 
-    .alias('v', 'debug')
+    .describe('verbose', 'Shows code snippets')
+    .alias('verbose', 'v')
     .boolean('v')
-    .describe('v', 'Turns on verbose debug logging')
 
-    .help('h')
-    .alias('h', 'help')
+    .help('help')
+    .alias('help', 'h')
     .argv,
 
-    // Default to logging to stdout.
-    generator = require(`s/src/generator/${!argv.html ? 'log' : 'html'}`),
+    // Default to raw.
+    generator = require(
+        `s/src/generator/${
+            argv.html ? 'html' :
+                argv.v ? 'log' :
+                'raw'
+        }`
+    ),
     visitor = require('../src/visitor'),
     h = require('s/src/index'),
-    file = argv.file,
-    // TODO
-    log = console.log,
-    error = logger.error;
+    file = argv.file;//,
+    //flags = Number(argv.flags);
+
+/*
+visitor.setFlags(
+    !isNaN(flags) ?
+        flags :
+        255
+);
+*/
 
 // Logging is enabled by default.
-if (!argv.v) {
+if (!argv.debug) {
     logger.disable();
 }
 
-// Mixin.
+// Mixin our node type functions.
 h.register(visitor);
 
 if (!file) {
@@ -54,12 +72,12 @@ if (!file) {
 
     stdin.on('end', () => {
         h.makeTree(buf, generator, true)
-        .then(log)
-        .catch(error);
+        .then(logger.raw)
+        .catch(logger.error);
     });
 } else {
-    h.makeTree(file, generator, argv.verbose, false)
-    .then(log)
-    .catch(error);
+    h.makeTree(file, generator, false)
+    .then(logger.raw)
+    .catch(logger.error);
 }
 

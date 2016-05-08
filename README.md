@@ -41,9 +41,11 @@ Pipe:
 
     Property | Description
     ------------ | -------------
-    -f, --file | The file to analyze
-    --html | Creates an html document of the tree
-    -h, --help | Show help
+    --debug, -d | Turns on debug logging
+    --file, -f | The file to analyze
+    --html | Creates an html document of the analysis
+    --verbose, -v | Shows code snippets
+    --help, -h | Show help
 
 ## License
 
