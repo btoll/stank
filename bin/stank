@@ -19,22 +19,26 @@ const logger = require('logger'),
     .describe('html', 'Creates an html document of the analysis')
     .boolean('html')
 
-    .describe('verbose', 'Shows code snippets')
-    .alias('verbose', 'v')
-    .boolean('v')
+    .describe('verbosity', 'The level of verbosity')
+    .alias('v', 'v')
+    .alias('vv', 'vv')
 
     .help('help')
     .alias('help', 'h')
     .argv,
 
-    // Default to raw.
     generator = require(
         `s/src/generator/${
-            argv.html ? 'html' :
-                argv.v ? 'log' :
-                'raw'
+            argv.html ? 'html' : 'log'
         }`
     ),
+
+    // Unfortunately, a single -v returns a Boolean while multiples (-vv, -vvv) return an Array.
+    verbosity = argv.v && Array.isArray(argv.v) ?
+        argv.v.length :
+            argv.v ?
+                1 : 0,
+
     visitor = require('../src/visitor'),
     h = require('s/src/index'),
     file = argv.file;//,
@@ -71,12 +75,12 @@ if (!file) {
     });
 
     stdin.on('end', () => {
-        h.makeTree(buf, generator, true)
+        h.makeTree(buf, generator, verbosity, true)
         .then(logger.raw)
         .catch(logger.error);
     });
 } else {
-    h.makeTree(file, generator, false)
+    h.makeTree(file, generator, verbosity)
     .then(logger.raw)
     .catch(logger.error);
 }
