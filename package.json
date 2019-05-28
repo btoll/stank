@@ -1,6 +1,6 @@
 {
   "name": "stank",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "JavaScript static code analysis tool to detect code smells",
   "bin": {
     "stank": "./bin/stank"
@@ -31,8 +31,8 @@
   "author": "Benjamin Toll <benjam72@yahoo.com> (http://www.benjamintoll.com)",
   "license": "MIT",
   "dependencies": {
-    "logger": "git+https://github.com/btoll/logger.git",
-    "s": "git+https://github.com/btoll/s.git",
+    "onf-logger": "^0.1.0",
+    "onf-static": "git+https://github.com/btoll/onf-static.git",
     "yargs": "^4.6.0"
   },
   "devDependencies": {
@@ -44,4 +44,3 @@
     "jasmine-core": "^2.4.1"
   }
 }
-

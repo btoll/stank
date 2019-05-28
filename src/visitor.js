@@ -35,7 +35,7 @@ const captureFunction = function (node, parent, results) {
 
     stackManager.incr(0);
 
-    bodies.forEach(body => this.visit(body, node, results));
+    bodies && bodies.forEach(body => this.visit(body, node, results));
 
     const n = stackManager.incr(null);
 
